@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pico W Simulator (Roadmap Steps 1-5)</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+        }
+
+        .led {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #222;
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .led.on {
+            background: red;
+        }
+
+        #serial {
+            width: 100%;
+            height: 200px;
+            background: #111;
+            color: #0f0;
+            font-family: monospace;
+        }
+
+        .controls {
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Pico W Simulator - Steps 1-5</h1>
+
+    <!-- Step 1 & 5: LED UI -->
+    <div>
+        <h3>GPIO 15 (LED)</h3>
+        <div id="led15" class="led"></div>
+    </div>
+
+    <!-- Step 4: Button Input -->
+    <div class="controls">
+        <h3>GPIO 14 (Button)</h3>
+        <button id="btn14">Button GPIO14</button>
+    </div>
+
+    <!-- Step 3: Serial Monitor -->
+    <div>
+        <h3>Serial Monitor (UART0)</h3>
+        <textarea id="serial" readonly></textarea>
+        <button onclick="document.getElementById('serial').value = ''">Clear</button>
+    </div>
+
+    <!-- Simulation Logic -->
+    <script type="module">
+        // Import Simulation Modules
+        import { PicoGPIO } from './sim/gpio_sim.js';
+        import { TimeSim } from './sim/time_sim.js';
+        import { SerialSim } from './sim/serial_sim.js';
+
+        // Expose to window for manual testing in Console
+        window.PicoGPIO = PicoGPIO;
+        window.TimeSim = TimeSim;
+        window.SerialSim = SerialSim;
+
+        // --- UI Glue Code (Roadmap Step 1 & 4 & 5) ---
+
+        // Helper to update LED visual (Step 1)
+        window.updateLED = (pin, value) => {
+            if (pin === 15) {
+                const led = document.getElementById("led15");
+                if (led) {
+                    // Direct inline style for maximum reliability
+                    led.style.backgroundColor = (value === 1) ? "red" : "#222";
+                }
+            }
+        };
+
+        // Button Input Logic (Roadmap Step 4)
+        const btn14 = document.getElementById("btn14");
+        const buttonPin = 14;
+
+        btn14.onmousedown = () => {
+            PicoGPIO.setInput(buttonPin, 0); // Pressed (Low)
+            console.log("Button Pressed (GPIO 14 -> 0)");
+        };
+
+        btn14.onmouseup = () => {
+            PicoGPIO.setInput(buttonPin, 1); // Released (High/Pull-up)
+            console.log("Button Released (GPIO 14 -> 1)");
+        };
+
+        // Initialize Default State
+        console.log("Simulation Ready.");
+        console.log("Run manual tests in console or compile C code (Step 6).");
+
+        // Initialize Serial
+        SerialSim.init();
+    </script>
+</body>
+
+</html>

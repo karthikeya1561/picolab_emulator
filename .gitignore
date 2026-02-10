@@ -1,0 +1,15 @@
+# Node
+node_modules/
+dist/
+.DS_Store
+
+# Build Artifacts (WASM)
+js/pico_sim.js
+js/pico_sim.wasm
+
+# Editor
+.vscode/
+.idea/
+
+# Windows
+Thumbs.db
