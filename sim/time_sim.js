@@ -3,20 +3,13 @@ export const TimeSim = {
     start: Date.now(),
 
     sleep_ms(ms) {
-        // Simple busy wait for simulation accuracy in synchronous contexts
-        // Note: This BLOCKS the browser entirely. A better simulation uses Asyncify or Workers.
-        // For roadmap Step 2 compat, we keep it simple or assume worker context.
-        const start = Date.now();
-        while (Date.now() - start < ms) {
-            // spin
-        }
+        return new Promise(resolve => setTimeout(resolve, ms));
     },
 
     sleep_us(us) {
-        const start = performance.now();
-        while ((performance.now() - start) * 1000 < us) {
-            // spin
-        }
+        // Microsecond precision isn't really possible with setTimeout, 
+        // but we can approximate it.
+        return new Promise(resolve => setTimeout(resolve, us / 1000));
     },
 
     get_time_us() {
