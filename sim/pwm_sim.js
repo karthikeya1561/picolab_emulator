@@ -24,18 +24,11 @@ export const PicoPWM = {
             duty = level / s.wrap;
         }
 
-        // Visual hook (Opacity for LED)
-        if (typeof window !== 'undefined' && window.updateLED) {
-            // For PWM, we might want a special update or just treat > 50% as ON?
-            // Or better: update opacity if the UI supports it.
-            // For now, let's just log it and threshold it for the boolean LED
-            console.log(`[PWM] GPIO ${pin} Level ${level}/${s.wrap} (${(duty * 100).toFixed(1)}%)`);
-
-            // Simple threshold for digital LED visualization
-            window.updateLED(pin, duty > 0.5 ? 1 : 0);
-
-            // If we want real dimming, we'd need to update index.html to handle opacity
-        }
+            // Visual hook (Opacity for LED)
+            if (typeof window !== 'undefined' && window.updateLED) {
+                window.updateLED(pin, duty);
+                console.log(`[PWM] GPIO ${pin} Level ${level}/${s.wrap} (${(duty * 100).toFixed(1)}%)`);
+            }
     },
 
     set_enabled(slice, enabled) {
