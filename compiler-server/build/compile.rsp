@@ -1,0 +1,26 @@
+E:\new chnages\compiler-server\build\user_main.c
+E:\new chnages\compiler-server\sim\cyw43_arch.c
+E:\new chnages\compiler-server\sim\fs.c
+E:\new chnages\compiler-server\sim\gpio.c
+E:\new chnages\compiler-server\sim\http_client.c
+E:\new chnages\compiler-server\sim\mqtt_client.c
+E:\new chnages\compiler-server\sim\pwm.c
+E:\new chnages\compiler-server\sim\reset.c
+E:\new chnages\compiler-server\sim\stdio.c
+E:\new chnages\compiler-server\sim\time.c
+-IE:\new chnages\compiler-server\sdk
+-o
+E:\new chnages\compiler-server\build\app.js
+-sEXPORTED_FUNCTIONS=["_main"]
+-sEXPORTED_RUNTIME_METHODS=["ccall","cwrap","UTF8ToString","stringToUTF8","lengthBytesUTF8"]
+-sASYNCIFY
+-sASYNCIFY_IMPORTS=["emscripten_sleep"]
+-sMODULARIZE=1
+-sEXPORT_NAME=createModule
+-sENVIRONMENT=web
+-sALLOW_MEMORY_GROWTH=1
+-sINITIAL_MEMORY=16777216
+-sNO_EXIT_RUNTIME=1
+-O2
+--js-library
+E:\new chnages\compiler-server\sim\js_library.js

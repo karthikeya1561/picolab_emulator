@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>CircuitFlow Simulator - Simulation Workspace</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#BD93F9", // Dracula Purple
+                        secondary: "#FF79C6", // Dracula Pink
+                        accent: "#F1FA8C", // Dracula Yellow
+                        success: "#50FA7B", // Dracula Green
+                        danger: "#FF5555", // Dracula Red
+                        "dracula-bg": "#282A36",
+                        "dracula-current": "#44475A",
+                        "dracula-fg": "#F8F8F2",
+                        "dracula-comment": "#6272A4",
+                        "dracula-cyan": "#8BE9FD",
+                        "dracula-orange": "#FFB86C",
+
+                        // Mapping to existing project keys
+                        "background-light": "#F8F8F2",
+                        "background-dark": "#282A36",
+                        "panel-dark": "#1E1F29",
+                        "border-dark": "#44475A",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "sans": ["Inter", "sans-serif"],
+                        "mono": ["Fira Code", "Consolas", "Monaco", "monospace"]
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.375rem",
+                    },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .code-font {
+            font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+        }
+        /* Plain Canvas Background (Dracula Theme) */
+        .grid-pattern {
+            background-color: #282A36;
+        }
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #282A36; 
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6272A4; 
+        }
+
+        /* Debugger Breakpoint Glyph styling */
+        .breakpoint-glyph {
+            background-color: #ff5555;
+            border-radius: 50%;
+            width: 10px !important;
+            height: 10px !important;
+            margin-left: 5px;
+            margin-top: 5px;
+            box-shadow: 0 0 5px rgba(255,85,85,0.6);
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark text-gray-800 dark:text-dracula-fg font-sans h-screen flex flex-col overflow-hidden">
+    <header
+        class="flex shrink-0 items-center justify-between whitespace-nowrap border-b border-gray-200 dark:border-dracula-current px-4 h-14 bg-white dark:bg-[#1E1F29] shadow-sm z-20">
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-2xl">memory</span>
+                <h1 class="font-bold text-lg tracking-tight text-gray-800 dark:text-dracula-fg">CircuitFlow Simulator
+                </h1>
+            </div>
+            <span class="h-4 w-px bg-gray-300 dark:bg-dracula-comment"></span>
+            <div
+                class="text-sm text-gray-500 dark:text-dracula-comment font-medium editable outline-none border-b border-transparent focus:border-primary hover:text-gray-700 dark:hover:text-dracula-fg transition-colors">
+                Untitled Project
+            </div>
+        </div>
+        <div class="flex flex-1 justify-end gap-3 items-center">
+            <button id="save-code-btn"
+                class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-dracula-fg bg-gray-100 dark:bg-dracula-current hover:bg-gray-200 dark:hover:bg-[#53576e] rounded-md transition-all border border-transparent dark:border-gray-700">
+                <span class="material-symbols-outlined text-lg">save</span>
+                Save Code
+            </button>
+            <button id="share-project-btn"
+                class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-primary hover:bg-opacity-90 rounded-md transition-all shadow-lg shadow-purple-500/20">
+                <span class="material-symbols-outlined text-lg">share</span>
+                Share Project
+            </button>
+            <div
+                class="ml-2 w-8 h-8 rounded-full bg-gradient-to-tr from-secondary to-primary flex items-center justify-center text-white font-bold cursor-pointer hover:ring-2 ring-offset-2 ring-primary ring-offset-dracula-bg">
+                <span class="material-symbols-outlined text-lg">person</span>
+            </div>
+        </div>
+    </header>
+    <div class="flex flex-1 overflow-hidden">
+        <aside
+            class="w-5/12 flex flex-col border-r border-gray-200 dark:border-dracula-current bg-[#23242e] relative z-10">
+            <div class="flex items-center bg-[#1E1F29] border-b border-dracula-current">
+                <div
+                    class="flex items-center px-4 py-2 bg-[#282A36] text-dracula-fg border-t-2 border-primary text-sm font-medium cursor-pointer">
+                    <span class="material-symbols-outlined text-primary text-[14px] mr-2">code</span>
+                    main.py
+                    <span
+                        class="material-symbols-outlined text-gray-500 hover:text-danger text-[14px] ml-3">close</span>
+                </div>
+                <!-- ID tab-diagram preserved -->
+                <div id="tab-diagram"
+                    class="flex items-center px-4 py-2 text-dracula-comment hover:text-dracula-fg hover:bg-[#282A36] text-sm font-medium cursor-pointer transition-colors">
+                    <span class="material-symbols-outlined text-dracula-orange text-[14px] mr-2">data_object</span>
+                    diagram.json
+                </div>
+                <div class="flex-1 flex justify-end px-2">
+                    <button class="text-dracula-comment hover:text-dracula-fg p-1 rounded hover:bg-dracula-current">
+                        <span class="material-symbols-outlined text-[16px]">add</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Editor Container: Using ID 'editor-container' for hooking Monaco -->
+            <!-- Adjusted bg to #282A36 for Dracula Editor -->
+            <div class="flex-1 overflow-auto bg-[#282A36] text-sm leading-6 code-font flex relative"
+                id="editor-container">
+                <!-- Monaco will inject itself here -->
+            </div>
+            <div class="h-8 bg-primary text-white flex items-center px-3 text-xs font-medium justify-between shrink-0">
+                <div class="flex items-center gap-4">
+                    <span class="flex items-center gap-1"><span
+                            class="material-symbols-outlined text-[14px]">check_circle</span> Ready</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span>Ln 1, Col 1</span>
+                    <span>UTF-8</span>
+                    <span>Python</span>
+                </div>
+            </div>
+        </aside>
+        <main class="w-7/12 flex flex-col relative bg-[#21222C]">
+            <div
+                class="h-12 border-b border-dracula-current flex items-center justify-between px-4 bg-[#1E1F29] shrink-0 shadow-md z-10">
+                <div class="flex items-center gap-3">
+                    <div class="relative group">
+                        <!-- Added classes for Dracula theme -->
+                        <button id="add-component-btn"
+                            class="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-primary border border-primary/40 bg-primary/5 hover:bg-primary/10 hover:border-primary/70 rounded-full transition-all shadow-sm hover:shadow-[0_0_15px_rgba(189,147,249,0.3)] tracking-wide"
+                            title="Add Component">
+                            <span class="material-symbols-outlined text-[20px]">add</span>
+                            Add Component
+                        </button>
+
+                        <div id="component-dropdown"
+                            class="absolute top-10 left-0 bg-[#282A36] border border-dracula-current rounded-lg w-48 shadow-xl hidden flex-col overflow-hidden z-20">
+                            <div id="add-resistor-btn"
+                                class="px-4 py-3 hover:bg-[#44475A] cursor-pointer text-sm text-dracula-fg flex items-center gap-3 transition-colors group">
+                                <!-- Icon -->
+                                <div class="w-16 h-8 relative shrink-0">
+                                    <svg width="100%" height="100%" viewBox="0 0 559 84"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <line x1="0" y1="42" x2="149" y2="42" stroke="#888" stroke-width="20" />
+                                        <line x1="399" y1="42" x2="559" y2="42" stroke="#888" stroke-width="20" />
+                                        <rect x="149" y="0" width="250" height="84" rx="20" fill="#E6D3A3" />
+                                        <rect x="183" y="0" width="16" height="84" fill="#8B4513" />
+                                        <rect x="219" y="0" width="20" height="84" fill="#000000" />
+                                        <rect x="259" y="0" width="20" height="84" fill="#FF0000" />
+                                        <rect x="319" y="0" width="20" height="84" fill="#D4AF37" />
+                                    </svg>
+                                </div>
+                                <span class="font-medium">Resistor</span>
+                            </div>
+                            <div id="add-led-btn"
+                                class="px-4 py-3 hover:bg-[#44475A] cursor-pointer text-sm text-dracula-fg flex items-center gap-3 transition-colors group border-t border-dracula-current">
+                                <!-- Icon -->
+                                <div class="w-8 h-8 relative shrink-0 flex items-center justify-center">
+                                    <svg width="24" height="24" viewBox="0 0 100 200"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <defs>
+                                            <linearGradient id="led-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" stop-color="#ff4d4d" />
+                                                <stop offset="50%" stop-color="#ff0000" />
+                                                <stop offset="100%" stop-color="#cc0000" />
+                                            </linearGradient>
+                                        </defs>
+                                        <path d="M35,150 L35,190" stroke="#999" stroke-width="8"
+                                            stroke-linecap="round" />
+                                        <path d="M65,150 L65,180 L80,195" stroke="#999" stroke-width="8"
+                                            stroke-linecap="round" fill="none" />
+                                        <path d="M20,60 Q20,10 50,10 Q80,10 80,60 L80,140 L20,140 Z"
+                                            fill="url(#led-grad)" />
+                                        <rect x="15" y="140" width="70" height="10" rx="2" fill="#cc0000" />
+                                        <ellipse cx="35" cy="40" rx="8" ry="12" fill="rgba(255,255,255,0.4)"
+                                            transform="rotate(-30 35 40)" />
+                                    </svg>
+                                </div>
+                                <span class="font-medium">LED</span>
+                            </div>
+                            <!-- Push Button Option -->
+                            <div id="add-pushbutton-btn"
+                                class="px-4 py-3 hover:bg-[#44475A] cursor-pointer text-sm text-dracula-fg flex items-center gap-3 transition-colors group border-t border-dracula-current">
+                                <!-- Icon -->
+                                <div class="w-8 h-8 relative shrink-0 flex items-center justify-center">
+                                    <svg width="24" height="24" viewBox="1030 1125 100 75"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="1037" y="1127" width="79" height="55" rx="3" fill="#464646" />
+                                        <rect x="1041" y="1131" width="70" height="47" rx="2" fill="#EAEAEA" />
+                                        <circle cx="1077" cy="1155" r="16" fill="#008000" />
+                                        <path d="M1020 1140H1037" stroke="#D9D9D9" stroke-width="4" />
+                                        <path d="M1117 1140H1134" stroke="#D9D9D9" stroke-width="4" />
+                                        <path d="M1020 1165H1037" stroke="#D9D9D9" stroke-width="4" />
+                                        <path d="M1117 1165H1134" stroke="#D9D9D9" stroke-width="4" />
+                                    </svg>
+                                </div>
+                                <span class="font-medium">Push Button</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Separator -->
+                    <div class="h-6 w-px bg-dracula-current mx-1"></div>
+
+                    <button id="run-btn"
+                        class="flex items-center gap-2 px-6 py-2 text-sm font-semibold text-dracula-bg bg-success hover:bg-[#69ff94] rounded-full transition-all shadow-[0_0_10px_rgba(80,250,123,0.15)] hover:shadow-[0_0_20px_rgba(80,250,123,0.4)] transform hover:-translate-y-0.5 tracking-wide">
+                        <span class="material-symbols-outlined text-[20px] fill-current">play_arrow</span>
+                        Start Simulation
+                    </button>
+                    <button id="stop-btn" disabled
+                        class="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-danger hover:bg-[#ff6e6e] rounded-full transition-all shadow-[0_0_10px_rgba(255,85,85,0.15)] hover:shadow-[0_0_20px_rgba(255,85,85,0.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:transform-none tracking-wide">
+                        <span class="material-symbols-outlined text-[20px] fill-current">stop</span>
+                        Stop
+                    </button>
+                    <!-- Debugger Controls -->
+                    <div class="h-6 w-px bg-dracula-current mx-1"></div>
+                    
+                    <button id="pause-btn" disabled
+                        class="flex shrink-0 items-center justify-center w-9 h-9 bg-dracula-orange hover:bg-[#ffc88a] rounded-full transition-all shadow-[0_0_10px_rgba(255,184,108,0.15)] hover:shadow-[0_0_20px_rgba(255,184,108,0.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:transform-none"
+                        title="Pause Execution">
+                        <span class="material-symbols-outlined text-[20px] text-dracula-bg">pause</span>
+                    </button>
+                    
+                    <button id="resume-btn" disabled
+                        class="flex shrink-0 items-center justify-center w-9 h-9 bg-dracula-cyan hover:bg-[#a4edff] rounded-full transition-all shadow-[0_0_10px_rgba(139,233,253,0.15)] hover:shadow-[0_0_20px_rgba(139,233,253,0.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:transform-none hidden"
+                        title="Resume Execution">
+                        <span class="material-symbols-outlined text-[20px] text-dracula-bg">play_arrow</span>
+                    </button>
+
+                    <button id="step-btn" disabled
+                        class="flex shrink-0 items-center justify-center w-9 h-9 bg-primary hover:bg-[#caa6f9] rounded-full transition-all shadow-[0_0_10px_rgba(189,147,249,0.15)] hover:shadow-[0_0_20px_rgba(189,147,249,0.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:transform-none hidden"
+                        title="Step Over">
+                        <span class="material-symbols-outlined text-[20px] text-white">step_over</span>
+                    </button>
+
+                    <button id="inspector-toggle-btn" disabled
+                        class="flex shrink-0 items-center justify-center w-9 h-9 bg-dracula-comment/30 hover:bg-dracula-comment/50 rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed hidden"
+                        title="Toggle State Inspector">
+                        <span class="material-symbols-outlined text-[20px] text-dracula-cyan">bug_report</span>
+                    </button>
+
+                    <button id="perf-toggle-btn"
+                        class="flex shrink-0 items-center justify-center w-9 h-9 bg-dracula-comment/30 hover:bg-dracula-comment/50 rounded-full transition-all"
+                        title="Toggle Performance Monitor">
+                        <span class="material-symbols-outlined text-[20px] text-dracula-orange">speed</span>
+                    </button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button
+                        class="p-1.5 text-dracula-comment hover:text-dracula-fg hover:bg-white/5 active:bg-white/10 rounded transition-colors"
+                        title="Undo">
+                        <span class="material-symbols-outlined text-[20px]">undo</span>
+                    </button>
+                    <button
+                        class="p-1.5 text-dracula-comment hover:text-dracula-fg hover:bg-white/5 active:bg-white/10 rounded transition-colors"
+                        title="Redo">
+                        <span class="material-symbols-outlined text-[20px]">redo</span>
+                    </button>
+                    <div class="h-4 w-px bg-dracula-current mx-1"></div>
+                    <!-- Controls irrelevant for now -->
+                    <button id="zoom-out-btn"
+                        class="p-1.5 text-dracula-comment hover:text-dracula-fg hover:bg-white/5 active:bg-white/10 rounded transition-colors"
+                        title="Zoom Out">
+                        <span class="material-symbols-outlined text-[20px]">remove</span>
+                    </button>
+                    <span id="zoom-level-lbl"
+                        class="text-sm font-mono text-dracula-fg px-1 min-w-[3ch] text-center">30%</span>
+                    <button id="zoom-in-btn"
+                        class="p-1.5 text-dracula-comment hover:text-dracula-fg hover:bg-white/5 active:bg-white/10 rounded transition-colors"
+                        title="Zoom In">
+                        <span class="material-symbols-outlined text-[20px]">add</span>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 relative overflow-hidden grid-pattern cursor-grab active:cursor-grabbing"
+                id="simulation-area">
+                <div id="board-container"
+                    class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 origin-center transition-transform duration-75 ease-out cursor-default">
+                    <!-- SVG will be injected here by main.js -->
+                </div>
+                <!-- Dynamic components like LEDs will be appended here via JS -->
+                <!-- Placeholder container specifically for LEDs if we decide to re-enable them later -->
+                <div id="led-board"
+                    class="absolute top-0 left-0 w-full h-full pointer-events-none p-4 flex flex-wrap gap-4 z-10"></div>
+            </div>
+
+            <!-- Floating Component Properties Popup -->
+            <div id="component-popup"
+                class="absolute hidden flex-col gap-2 p-3 bg-dracula-bg/90 backdrop-blur-md border border-dracula-current/50 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] z-50 w-52 animate-in fade-in zoom-in-95 duration-100">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs font-bold text-dracula-comment uppercase tracking-[0.1em]">Properties</span>
+                    <div class="flex gap-1">
+                        <button id="popup-flip"
+                            class="p-1 text-dracula-comment hover:text-dracula-fg hover:bg-white/5 rounded transition-colors hidden"
+                            title="Flip">
+                            <span class="material-symbols-outlined text-[18px]">flip</span>
+                        </button>
+                        <button id="popup-rotate"
+                            class="p-1 text-dracula-comment hover:text-dracula-fg hover:bg-white/5 active:scale-90 rounded-lg transition-all"
+                            title="Rotate">
+                            <span class="material-symbols-outlined text-[18px]">rotate_right</span>
+                        </button>
+                        <button id="popup-delete"
+                            class="p-1 text-danger/70 hover:text-danger hover:bg-danger/10 active:scale-90 rounded-lg transition-all"
+                            title="Delete">
+                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Resistor Controls -->
+                <div id="resistor-controls" class="flex items-center gap-2">
+                    <input type="number" id="popup-value"
+                        class="w-16 bg-panel-dark border border-dracula-current rounded px-2 py-1 text-sm text-dracula-fg focus:outline-none focus:border-primary"
+                        value="1">
+                    <select id="popup-unit"
+                        class="w-20 bg-panel-dark border border-dracula-current rounded px-2 py-1 text-sm text-dracula-fg focus:outline-none focus:border-primary">
+                        <option value="1">Ω</option>
+                        <option value="1000">kΩ</option>
+                        <option value="1000000">MΩ</option>
+                    </select>
+                </div>
+                <!-- LED Controls -->
+                <div id="led-controls" class="hidden flex flex-wrap items-center gap-2 mt-1 px-1">
+                    <!-- Color Swatches - Circular with UX Polish -->
+                    <div class="w-5 h-5 shrink-0 rounded-full cursor-pointer bg-red-500 hover:scale-125 hover:ring-2 ring-primary/50 active:scale-90 transition-all duration-200 shadow-sm"
+                        data-color="#ef4444" title="Red"></div>
+                    <div class="w-5 h-5 shrink-0 rounded-full cursor-pointer bg-green-500 hover:scale-125 hover:ring-2 ring-primary/50 active:scale-90 transition-all duration-200 shadow-sm"
+                        data-color="#22c55e" title="Green"></div>
+                    <div class="w-5 h-5 shrink-0 rounded-full cursor-pointer bg-blue-500 hover:scale-125 hover:ring-2 ring-primary/50 active:scale-90 transition-all duration-200 shadow-sm"
+                        data-color="#3b82f6" title="Blue"></div>
+                    <div class="w-5 h-5 shrink-0 rounded-full cursor-pointer bg-yellow-400 hover:scale-125 hover:ring-2 ring-primary/50 active:scale-90 transition-all duration-200 shadow-sm"
+                        data-color="#facc15" title="Yellow"></div>
+                    <div class="w-5 h-5 shrink-0 rounded-full cursor-pointer bg-orange-500 hover:scale-125 hover:ring-2 ring-primary/50 active:scale-90 transition-all duration-200 shadow-sm"
+                        data-color="#f97316" title="Orange"></div>
+                    <div class="w-5 h-5 shrink-0 rounded-full cursor-pointer bg-purple-500 hover:scale-125 hover:ring-2 ring-primary/50 active:scale-90 transition-all duration-200 shadow-sm"
+                        data-color="#a855f7" title="Purple"></div>
+                    <div class="w-5 h-5 shrink-0 rounded-full cursor-pointer bg-pink-500 hover:scale-125 hover:ring-2 ring-primary/50 active:scale-90 transition-all duration-200 shadow-sm"
+                        data-color="#ec4899" title="Pink"></div>
+                    <div class="w-5 h-5 shrink-0 rounded-full cursor-pointer bg-cyan-400 hover:scale-125 hover:ring-2 ring-primary/50 active:scale-90 transition-all duration-200 shadow-sm"
+                        data-color="#22d3ee" title="Cyan"></div>
+                    <div class="w-5 h-5 shrink-0 rounded-full cursor-pointer bg-white hover:scale-125 hover:ring-2 ring-primary/50 active:scale-90 transition-all duration-200 shadow-sm"
+                        data-color="#ffffff" title="White"></div>
+                    <div class="w-5 h-5 shrink-0 rounded-full cursor-pointer bg-lime-400 hover:scale-125 hover:ring-2 ring-primary/50 active:scale-90 transition-all duration-200 shadow-sm"
+                        data-color="#a3e635" title="Lime"></div>
+                </div>
+            </div>
+
+            <!-- Console Area -->
+            <div id="console-panel"
+                class="absolute bottom-0 left-0 right-0 h-60 bg-[#0b0f17]/95 backdrop-blur-md border-t border-border-dark shadow-2xl flex flex-col overflow-hidden z-30 transition-all duration-300 hidden">
+                <div class="flex items-center justify-between px-4 py-2 bg-[#1a2232] border-b border-border-dark">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[18px] text-primary">terminal</span>
+                        <span class="text-[11px] font-bold text-gray-200 uppercase tracking-[0.1em]">CONSOLE LOG</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="clear-console"
+                            class="p-1 hover:bg-[#243047] rounded text-gray-400 hover:text-white transition-colors"
+                            title="Clear logs">
+                            <span class="material-symbols-outlined text-[18px]">block</span>
+                        </button>
+                        <button id="console-toggle-btn"
+                            class="p-1 hover:bg-[#243047] rounded text-gray-400 hover:text-white transition-colors"
+                            title="Minimize">
+                            <span class="material-symbols-outlined text-[20px]">remove</span>
+                        </button>
+
+                    </div>
+                </div>
+                <div id="output" class="flex-1 overflow-y-auto p-4 code-font text-[12px] space-y-1">
+                    <!-- Logs go here -->
+                    <div class="flex gap-3 items-start group">
+                        <span class="text-gray-600 shrink-0 select-none">[System]</span>
+                        <span class="text-gray-400 italic">Ready...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- State Inspector Panel (Step 17) -->
+            <div id="state-inspector-panel"
+                class="absolute top-0 right-0 bottom-0 w-56 bg-[#0b0f17]/95 backdrop-blur-md border-l border-border-dark shadow-2xl flex flex-col overflow-hidden z-30 transition-all duration-300 hidden">
+                <div class="flex items-center justify-between px-3 py-2 bg-[#1a2232] border-b border-border-dark">
+                    <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px] text-dracula-cyan">bug_report</span>
+                        <span class="text-[10px] font-bold text-gray-200 uppercase tracking-[0.1em]">STATE INSPECTOR</span>
+                    </div>
+                    <button id="inspector-close-btn"
+                        class="p-0.5 hover:bg-[#243047] rounded text-gray-400 hover:text-white transition-colors"
+                        title="Close Inspector">
+                        <span class="material-symbols-outlined text-[18px]">close</span>
+                    </button>
+                </div>
+                <div id="inspector-content" class="flex-1 overflow-y-auto py-1 code-font text-[11px]">
+                    <div class="text-dracula-comment italic text-center py-4">Run simulation to inspect state</div>
+                </div>
+            </div>
+
+            <!-- Performance Monitor Panel (Step 18) -->
+            <div id="perf-panel"
+                class="absolute top-4 left-4 w-48 bg-[#0b0f17]/80 backdrop-blur-md border border-border-dark shadow-lg rounded-md overflow-hidden z-20 transition-all duration-300 hidden pointer-events-none">
+                <div class="flex items-center gap-1.5 px-3 py-1.5 bg-[#1a2232]/80 border-b border-border-dark">
+                    <span class="material-symbols-outlined text-[14px] text-dracula-orange">speed</span>
+                    <span class="text-[9px] font-bold text-gray-200 uppercase tracking-[0.08em]">SIMULATION STATS</span>
+                </div>
+                <div class="px-3 py-2 code-font text-[10px] space-y-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-dracula-comment">FPS:</span>
+                        <span id="perf-fps" class="text-dracula-fg font-bold">--</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-dracula-comment">Propagation:</span>
+                        <span id="perf-prop" class="text-dracula-fg font-bold">-- ms</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-dracula-comment">Worker latency:</span>
+                        <span id="perf-lat" class="text-dracula-fg font-bold">-- ms</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Share Project Modal (UI Improvement) -->
+    <div id="share-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0b0f17]/80 backdrop-blur-sm hidden">
+        <div class="bg-[#1a2232] border border-border-dark shadow-2xl rounded-lg w-full max-w-lg overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between px-4 py-3 bg-[#1E1F29] border-b border-border-dark">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[18px]">share</span>
+                    <h3 class="text-dracula-fg font-medium text-[14px]">Share Project</h3>
+                </div>
+                <button id="share-modal-close-icon" class="p-1 text-gray-400 hover:text-white hover:bg-[#282A36] rounded transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            </div>
+            <div class="p-5 flex flex-col gap-3">
+                <p class="text-gray-300 text-[13px]">Copy this link to share your project:</p>
+                <div class="flex gap-2">
+                    <input type="text" id="share-modal-input" readonly
+                        class="flex-1 bg-[#0b0f17] border border-border-dark rounded px-3 py-2 text-dracula-fg text-[13px] focus:outline-none focus:border-primary font-mono" />
+                    <button id="share-modal-copy-btn"
+                        class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-opacity-90 text-white rounded font-medium text-[13px] transition-all whitespace-nowrap">
+                        <span class="material-symbols-outlined text-[16px]">content_copy</span>
+                        <span id="share-modal-copy-text">Copy</span>
+                    </button>
+                </div>
+            </div>
+            <div class="px-5 py-3 bg-[#0b0f17]/50 border-t border-border-dark flex justify-end">
+                <button id="share-modal-close-btn"
+                        class="px-4 py-1.5 bg-gray-600 hover:bg-gray-500 text-white rounded text-[13px] font-medium transition-colors">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monaco Loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+    <!-- Main Application Logic -->
+    <script type="module" src="./src/app.js"></script>
+</body>
+
+</html>
